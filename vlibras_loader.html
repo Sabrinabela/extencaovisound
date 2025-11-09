@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VLibras Loader TCC</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: white; }
+    </style>
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+</head>
+<body>
+    <div vw class="enabled">
+        <div vw-access-button class="active"></div>
+        <div vw-plugin-wrapper>
+            <div class="vw-plugin-top-wrapper"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Inicializa o Widget do VLibras
+        new window.VLibras.Widget('https://vlibras.gov.br/app');
+
+        // Escuta por mensagens da extensão (postMessage)
+        window.addEventListener('message', function(event) {
+            // Verifica se a mensagem veio da sua extensão (é mais seguro verificar a origem, mas '*' funciona)
+            // if (event.origin === 'chrome-extension://[ID_DA_SUA_EXTENSAO]') { 
+            
+            if (event.data && event.data.action === 'translate') {
+                const text = event.data.text;
+                
+                // 3. Tenta iniciar a tradução
+                const startTranslation = () => {
+                    if (window.vlibras && window.vlibras.widget) {
+                         window.vlibras.widget.startText(text);
+                    }
+                };
+
+                startTranslation();
+                // Tenta novamente após um pequeno atraso, caso o SDK ainda esteja carregando
+                setTimeout(startTranslation, 1500); 
+            }
+            // }
+        });
+    </script>
+</body>
+</html>
