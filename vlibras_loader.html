@@ -16,30 +16,32 @@
     </div>
     
     <script>
-        // Inicializa o Widget do VLibras
-        new window.VLibras.Widget('https://vlibras.gov.br/app');
+    // Inicializa o Widget do VLibras
+    new window.VLibras.Widget('https://vlibras.gov.br/app');
 
-        // Escuta por mensagens da extensão (postMessage)
-        window.addEventListener('message', function(event) {
-            // Verifica se a mensagem veio da sua extensão (é mais seguro verificar a origem, mas '*' funciona)
-            // if (event.origin === 'chrome-extension://[ID_DA_SUA_EXTENSAO]') { 
+    // Escuta por mensagens da extensão (postMessage)
+    window.addEventListener('message', function(event) {
+        // ⚠️ ATENÇÃO: É mais seguro verificar se a origem corresponde ao seu domínio ou ID de extensão
+        // Mas por enquanto, vamos focar na lógica de tradução.
+        
+        if (event.data && event.data.action === 'translate') {
+            const text = event.data.text;
             
-            if (event.data && event.data.action === 'translate') {
-                const text = event.data.text;
-                
-                // 3. Tenta iniciar a tradução
-                const startTranslation = () => {
-                    if (window.vlibras && window.vlibras.widget) {
-                         window.vlibras.widget.startText(text);
-                    }
-                };
+            // 3. Tenta iniciar a tradução
+            const startTranslation = () => {
+                if (window.vlibras && window.vlibras.widget) {
+                     window.vlibras.widget.startText(text);
+                } else {
+                    console.error("VLibras SDK não está pronto.");
+                }
+            };
 
-                startTranslation();
-                // Tenta novamente após um pequeno atraso, caso o SDK ainda esteja carregando
-                setTimeout(startTranslation, 1500); 
-            }
-            // }
-        });
-    </script>
+            startTranslation();
+            // Tenta novamente após um pequeno atraso, caso o SDK ainda esteja carregando
+            // O carregamento do Unity pode levar alguns segundos.
+            setTimeout(startTranslation, 2500); 
+        }
+    });
+</script>
 </body>
 </html>
